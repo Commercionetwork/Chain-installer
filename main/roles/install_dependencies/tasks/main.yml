@@ -1,4 +1,4 @@
-- name: Install dependences
+- name: Install dependencies
   apt:
     pkg:
       - make
@@ -10,6 +10,14 @@
       - git
     update_cache: true
   become: true
+
+- name: Install Go using gantsign.golang role
+  include_role:
+    name: gantsign.golang
+  vars:
+    golang_gopath: '{{ go_path }}'
+    golang_install_dir: '/usr/local/go'
+
 
 - name: Upgrade node
   apt:

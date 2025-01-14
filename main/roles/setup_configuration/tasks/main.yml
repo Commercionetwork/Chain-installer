@@ -1,8 +1,8 @@
 - name: Download genesis file
   get_url:
-    url: https://raw.githubusercontent.com/commercionetwork/chains/master/commercio-3/genesis.json
+    url: https://raw.githubusercontent.com/commercionetwork/chains/master/{{ chain_id }}/genesis.json
     dest: "~/.commercionetwork/config/genesis.json"
-    checksum: sha256:a4a8a70f471aaef36f820996a0bcbb6b74f7ac1ff0756d0de63ec1db21e4f2f8
+    checksum: "sha256:{{ checksum }}"
   become: true
   become_user: "{{ comm_user }}"
 
@@ -92,15 +92,13 @@
   when: sync_type == "dump"
 
 - name: Sync database from host
-  command: "rsync -a --delete -e \"ssh -A -o StrictHostKeyChecking=no\" root@{{ sync_node }}:{{ sync_node_home_folder }}/.commercionetwork/data/ {{ drive_var }}/data/"
+  command: "rsync -a --delete root@{{ sync_node }}:{{ sync_node_home_folder }}/.commercionetwork/data/ {{ drive_var }}/data/"
   delegate_to: "{{ ansible_host }}"
-  ignore_errors: true
   when: sync_type == "pull"
 
 - name: Sync database from sync node
-  command: "rsync -a --delete -e \"ssh -A -o StrictHostKeyChecking=no\" {{ sync_node_home_folder }}/.commercionetwork/data/ root@{{ ansible_host }}:/{{ drive_var }}/data/"
+  command: "rsync -a --delete {{ sync_node_home_folder }}/.commercionetwork/data/ root@{{ ansible_host }}:/{{ drive_var }}/data/"
   delegate_to: "{{ sync_node }}"
-  ignore_errors: true
   when: sync_type == "push"
 
 - name: Stop sync node commercionetworkd service
@@ -111,12 +109,12 @@
   when: sync_type == "push" or sync_type == "pull"
 
 - name: Sync database from host
-  command: "rsync -a --delete -e \"ssh -A -o StrictHostKeyChecking=no\" root@{{ sync_node }}:{{ sync_node_home_folder }}/.commercionetwork/data/ {{ drive_var }}/data/"
+  command: "rsync -a --delete root@{{ sync_node }}:{{ sync_node_home_folder }}/.commercionetwork/data/ {{ drive_var }}/data/"
   delegate_to: "{{ ansible_host }}"
   when: sync_type == "pull"
 
 - name: Sync database from sync node
-  command: "rsync -a --delete -e \"ssh -A -o StrictHostKeyChecking=no\" {{ sync_node_home_folder }}/.commercionetwork/data/ root@{{ ansible_host }}:/{{ drive_var }}/data/"
+  command: "rsync -a --delete {{ sync_node_home_folder }}/.commercionetwork/data/ root@{{ ansible_host }}:/{{ drive_var }}/data/"
   delegate_to: "{{ sync_node }}"
   when: sync_type == "push"
 

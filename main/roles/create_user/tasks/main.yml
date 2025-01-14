@@ -2,6 +2,5 @@
   user:
     name: "{{ comm_user }}"
     state: present
-    append: true
     shell: "/bin/bash"
   become: true

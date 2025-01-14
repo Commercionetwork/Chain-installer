@@ -10,7 +10,7 @@
     mode: a+x
   become: true
   become_user: "{{ comm_user }}"
-  when: slack_hook != ""
+  when: slack_hook is defined and slack_hook != ""
 
 - name: install crontab
   cron:
@@ -19,4 +19,4 @@
     job: "{{ home_folder }}/test_height.sh >{{ home_folder }}/test_height.log 2>&1"
   become: true
   become_user: "{{ comm_user }}"
-  when: slack_hook != ""
+  when: slack_hook is defined and slack_hook != ""

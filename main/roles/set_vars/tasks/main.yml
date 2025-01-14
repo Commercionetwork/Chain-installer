@@ -7,3 +7,29 @@
   set_fact:
     sync_node_home_folder: >-
       {%- if sync_node_comm_user == "root" %}/root{%- else %}/home/{{ sync_node_comm_user }}{%- endif %}
+  when: sync_type == "push" or sync_type == "pull"
+
+- name: Get data from URL
+  uri:
+    url: "https://raw.githubusercontent.com/commercionetwork/chains/master/{{ chain_id }}/.data.json"
+    method: GET
+    return_content: yes
+  register: chain_data
+
+- name: Parse chain data JSON
+  set_fact:
+    parsed_data: "{{ chain_data.content | from_json}}"
+
+- name: parse chain data content
+  set_fact:
+    seeds: "{{ parsed_data.Seeds }}"
+    persistent_peers: "{{ parsed_data.Persistent_peers }}"
+    checksum: "{{ parsed_data.Genesis_Checksum }}"
+    trust_rpc1: "{{ custom_trust_rpc1 | default(parsed_data.Trust_rpc1) }}"
+    trust_rpc2: "{{ custom_trust_rpc2 | default(parsed_data.Trust_rpc2) }}"
+    bin_version: "{{ custom_bin_version | default(parsed_data.Release) }}"
+    cosmovisor_version: "{{ custom_cosmovisor_version | default('v1.3.0') }}"
+    genesis: "{{ custom_genesis | default('https://raw.githubusercontent.com/commercionetwork/chains/master/' + chain_id + '/genesis.json') }}"
+    go_path: "{{ custom_go_path | default(home_folder + '/go') }}"
+    comm_repo: "{{ custom_comm_repo | default('~/comm-binary') }}"
+    cosmos_repo: "{{ custom_cosmos_repo | default('~/cosmos-sdk') }}"

@@ -6,11 +6,8 @@
   roles:
     - set_vars
     - preliminar_checks
-    - install_dependences
+    - install_dependencies
     - create_user
-    - role: gantsign.golang
-      golang_gopath: '{{ go_path }}'
-      golang_install_dir: '/usr/local/go'
     - install_binary
     - setup_service
     - init_node
